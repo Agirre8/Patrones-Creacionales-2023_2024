@@ -3,7 +3,7 @@ import pandas as pd
 data = pd.read_csv('Ejercicio1/activaciones_samur_2022.csv', delimiter = ";")
 
 print(data.info()) 
-print(data.describe())  
+print(data.describe())
 print(data.head()) 
 
 #elimino los valores nulos para que no me de error al procesar lso datos
