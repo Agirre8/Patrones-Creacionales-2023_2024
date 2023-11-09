@@ -98,9 +98,9 @@ class PizzaBuilderGUI:
 
 
 
-        self.cliente_numero = sum(1 for line in open("pizza_builder/CSV/pizzas.csv", encoding="utf-8")) // 2 + 1
+        self.cliente_numero = sum(1 for line in open("Ejercicio2/CSV/pizzas.csv", encoding="utf-8")) // 2 + 1
         
-        csv_file_path = "pizza_builder/CSV/pizzas.csv"
+        csv_file_path = "Ejercicio2/CSV/pizzas.csv"
 
         # Crear o cargar la clave de cifrado
         clave_path = "clave.key"
@@ -141,7 +141,7 @@ class PizzaBuilderGUI:
         datos_desencriptados = self.desencriptar_datos(clave, datos_encriptados)
 
         # Crear otro archivo CSV con la información desencriptada
-        csv_file_path_decrypted = "pizza_builder/CSV/pizzas_decrypted.csv"
+        csv_file_path_decrypted = "Ejercicio2/CSV/pizzas_decrypted.csv"
         with open(csv_file_path_decrypted, mode="w", newline="", encoding="utf-8") as file_decrypted:
             writer_decrypted = csv.writer(file_decrypted)
 
