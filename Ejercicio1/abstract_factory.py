@@ -91,6 +91,8 @@ if __name__ == "__main__":
     datos = pd.read_csv('Ejercicio1/dataset_limpio.csv', delimiter = ",")
     hora = datos["Hora Intervención"]
 
+    
+
     factory = StatisticalAnalysisFactory()
     generate_report(factory, hora)
 
