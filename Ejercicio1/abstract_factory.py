@@ -13,7 +13,7 @@ class DataFactory(ABC):
 # Clase concreta de fábrica para análisis estadísticos
 class StatisticalAnalysisFactory(DataFactory):
     def create_statistical_analysis(self):
-        return StatisticalAnalysis()
+        return MeanAnalysis()  # Puedes cambiar esto a otras clases concretas según necesites
     
     def create_data_visualization(self):
         return None
@@ -24,7 +24,7 @@ class DataVisualizationFactory(DataFactory):
         return None
     
     def create_data_visualization(self):
-        return DataVisualization()
+        return HistogramVisualization()  # Puedes cambiar esto a otras clases concretas según necesites
 
 # Interfaz Abstract Product para análisis estadísticos
 class StatisticalAnalysis(ABC):
@@ -62,18 +62,6 @@ class HistogramVisualization(DataVisualization):
         plt.ylabel('Frecuencia')
         plt.title('Histograma')
         plt.show()
-
-class BarChartVisualization(DataVisualization):
-    def create_chart(self, data):
-        import matplotlib.pyplot as plt
-        categories = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo']
-        values = [5, 10, 15, 20, 25]
-        plt.bar(categories, values, color='green')
-        plt.xlabel('Meses')
-        plt.ylabel('Valores')
-        plt.title('Gráfico de Barras')
-        plt.show()
-
 # Ejemplo de uso
 def generate_report(factory, data):
     statistical_analysis = factory.create_statistical_analysis()
@@ -87,10 +75,12 @@ def generate_report(factory, data):
         data_visualization.create_chart(data)
 
 if __name__ == "__main__":
-    data = [1, 2, 3, 4, 5]
-    
+    import pandas as pd
+    datos = pd.read_csv('Ejercicio1/dataset_limpio.csv', delimiter = ",")
+    hora = datos["Hora Intervención"]
+
     statistical_factory = StatisticalAnalysisFactory()
-    generate_report(statistical_factory, data)
+    generate_report(statistical_factory, hora)
     
     visualization_factory = DataVisualizationFactory()
-    generate_report(visualization_factory, data)
+    generate_report(visualization_factory, hora)
