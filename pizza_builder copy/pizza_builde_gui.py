@@ -5,6 +5,7 @@ from pizza import Pizza
 from pizza_builder import PizzaMargheritaBuilder, PizzaPremiumBuilder
 from pizzeria_director import PizzeriaDirector
 import csv
+from PIL import Image, ImageTk
 
 class PizzaBuilderGUI:
     def __init__(self, master):
@@ -52,7 +53,12 @@ class PizzaBuilderGUI:
                                     "York", "Bacon", "Cebolla", "Pimiento", "Carne"]
         for ingrediente in ingredientes_disponibles:
             var = tk.IntVar()
-            checkbox = tk.Checkbutton(self.frame, text=ingrediente, variable=var, command=lambda i=ingrediente, v=var: self.toggle_ingrediente(i, v))
+            imagen_path = f"./ImagenesPizza/{ingrediente.lower()}.png"  # Cambiado a .png
+            imagen = Image.open(imagen_path)
+            imagen_png = ImageTk.PhotoImage(imagen)
+
+            checkbox = tk.Checkbutton(self.frame, text=ingrediente, variable=var, command=lambda i=ingrediente, v=var, img=imagen_png: self.toggle_ingrediente(i, v, img))
+            checkbox.image = imagen_png  # Conserva una referencia a la imagen para evitar que se elimine
             checkbox.pack()
             self.checkbox_vars.append(var)
 
