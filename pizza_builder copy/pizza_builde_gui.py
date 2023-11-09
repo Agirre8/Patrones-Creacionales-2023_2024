@@ -6,6 +6,8 @@ from pizza_builder import PizzaMargheritaBuilder, PizzaPremiumBuilder
 from pizzeria_director import PizzeriaDirector
 import csv
 from PIL import Image, ImageTk
+import os 
+
 
 class PizzaBuilderGUI:
     def __init__(self, master):
@@ -47,18 +49,11 @@ class PizzaBuilderGUI:
         self.label_ingredientes.pack()
 
         self.checkbox_vars = []
-
-        # Agrega ingredientes a la pizza personalizada
         ingredientes_disponibles = ["Queso", "Pepperoni", "Champiñones", "Aceitunas",
                                     "York", "Bacon", "Cebolla", "Pimiento", "Carne"]
         for ingrediente in ingredientes_disponibles:
             var = tk.IntVar()
-            imagen_path = f"./ImagenesPizza/{ingrediente.lower()}.png"  # Cambiado a .png
-            imagen = Image.open(imagen_path)
-            imagen_png = ImageTk.PhotoImage(imagen)
-
-            checkbox = tk.Checkbutton(self.frame, text=ingrediente, variable=var, command=lambda i=ingrediente, v=var, img=imagen_png: self.toggle_ingrediente(i, v, img))
-            checkbox.image = imagen_png  # Conserva una referencia a la imagen para evitar que se elimine
+            checkbox = tk.Checkbutton(self.frame, text=ingrediente, variable=var, command=lambda i=ingrediente, v=var: self.toggle_ingrediente(i, v))
             checkbox.pack()
             self.checkbox_vars.append(var)
 
@@ -92,12 +87,25 @@ class PizzaBuilderGUI:
         print("Tipo de salsa:", self.pizza.tipo_salsa)
         print("Ingredientes:", self.pizza.ingredientes)
 
+        # Obtener la ruta completa de la imagen del primer ingrediente seleccionado
+        if self.ingredientes_seleccionados:
+            primer_ingrediente = self.ingredientes_seleccionados[0]
+            imagen_path = os.path.abspath(os.path.join("ImagenesPizza", f"{primer_ingrediente.lower()}.png"))
+
+            # Intentar cargar la imagen
+            try:
+                imagen = Image.open(imagen_path)
+                imagen.show()
+            except FileNotFoundError:
+                print(f"Error: No se encontró la imagen en la ruta {imagen_path}")
+
         self.result_text.delete(1.0, tk.END)  # Limpiar el contenido anterior
         self.result_text.insert(tk.END, f"Tipo de masa: {self.pizza.tipo_masa}\n")
         self.result_text.insert(tk.END, f"Tipo de salsa: {self.pizza.tipo_salsa}\n")
         for ingrediente in self.pizza.ingredientes:
             self.result_text.insert(tk.END, ingrediente + "\n")
         self.result_text.config(state=tk.DISABLED)  # Deshabilitar la edición
+
 
 
 
