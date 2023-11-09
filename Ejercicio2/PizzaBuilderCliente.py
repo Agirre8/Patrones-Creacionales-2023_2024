@@ -1,6 +1,5 @@
 import tkinter as tk
-from PizzaBuilder import Pizza, PizzaBuilder
-from PizzaDirector import PizzaDirector
+from PizzaBuilder import PizzaBuilder
 from Ingredientes import SalsaTomate, Queso, Topping, Verdura, SalsaVegana
 
 class PizzaGUI:
@@ -9,8 +8,6 @@ class PizzaGUI:
         self.master.title("Creador de Pizza")
         
         self.builder = PizzaBuilder([SalsaTomate(), Queso(), Topping(), Verdura(), SalsaVegana()])
-        self.director = PizzaDirector()
-
         self.ingredientes_seleccionados = []
 
         self.frame = tk.Frame(self.master)
@@ -18,6 +15,13 @@ class PizzaGUI:
 
         self.label = tk.Label(self.frame, text="Selecciona tus ingredientes:")
         self.label.pack()
+
+        # Etiquetas dinámicas para mostrar información sobre ingredientes
+        self.labels_ingredientes = []
+        for ingrediente in [SalsaTomate(), Queso(), Topping(), Verdura(), SalsaVegana()]:
+            label = tk.Label(self.frame, text=f"{ingrediente.nombre} (Vegano)" if ingrediente.es_vegano else ingrediente.nombre)
+            label.pack()
+            self.labels_ingredientes.append(label)
 
         self.checkbox_vars = []
         for ingrediente in [SalsaTomate(), Queso(), Topping(), Verdura(), SalsaVegana()]:
@@ -39,7 +43,6 @@ class PizzaGUI:
         for ingrediente in self.ingredientes_seleccionados:
             self.builder.construir_ingrediente(ingrediente)
         
-        self.director.construir_pizza(self.builder, es_vegana=False)  # Puedes cambiar es_vegana según el caso
         pizza_personalizada = self.builder.obtener_pizza()
 
         # Puedes imprimir los ingredientes seleccionados o realizar otras acciones

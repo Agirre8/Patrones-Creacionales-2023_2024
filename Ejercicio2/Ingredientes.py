@@ -1,7 +1,7 @@
 # Archivo que define los ingredientes disponibles
 
 class Ingrediente:
-    def __init__(self, nombre, es_vegano=True):
+    def __init__(self, nombre="", es_vegano=True):
         self.nombre = nombre
         self.es_vegano = es_vegano
 
