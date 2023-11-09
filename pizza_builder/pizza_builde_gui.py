@@ -5,6 +5,9 @@ from pizza import Pizza
 from pizza_builder import PizzaMargheritaBuilder, PizzaPremiumBuilder
 from pizzeria_director import PizzeriaDirector
 import csv
+import os
+from cryptography.fernet import Fernet
+import sys
 
 class PizzaBuilderGUI:
     def __init__(self, master):
@@ -95,20 +98,64 @@ class PizzaBuilderGUI:
 
 
 
-        self.cliente_numero = sum(1 for line in open("pizzas.csv", encoding="utf-8")) // 2 + 1
+        self.cliente_numero = sum(1 for line in open("pizza_builder/CSV/pizzas.csv", encoding="utf-8")) // 2 + 1
+        
+        csv_file_path = "pizza_builder/CSV/pizzas.csv"
 
-        # Crear un nuevo archivo CSV o añadir al existente
-        with open("pizza_builder/CSV/pizzas.csv", mode="a", newline="", encoding="utf-8") as file:
+        # Crear o cargar la clave de cifrado
+        clave_path = "clave.key"
+        clave = self.obtener_o_generar_clave(clave_path)
+
+        # Encriptar los datos antes de escribir al archivo CSV
+        datos_encriptados = self.encriptar_datos(clave, [f"Cliente {self.cliente_numero}", self.pizza.tipo_masa, self.pizza.tipo_salsa, ", ".join(self.pizza.ingredientes)])
+
+        # Escribir al archivo CSV
+        with open(csv_file_path, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
 
             # Si el archivo está vacío, escribir la cabecera
             if file.tell() == 0:
                 writer.writerow(["Cliente", "Tipo de masa", "Tipo de salsa", "Ingredientes"])
 
-            # Escribir los datos de la pizza en una nueva línea
-            writer.writerow([f"Cliente {self.cliente_numero}", self.pizza.tipo_masa, self.pizza.tipo_salsa, ", ".join(self.pizza.ingredientes)])
+            # Escribir los datos encriptados al archivo
+            writer.writerow(datos_encriptados)
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PizzaBuilderGUI(root)
-    root.mainloop()
+    def obtener_o_generar_clave(self, clave_path):
+        # Si existe una clave, cargarla
+        if os.path.exists(clave_path):
+            with open(clave_path, "rb") as file:
+                clave = file.read()
+        else:
+            # Si no existe, generar una nueva clave y guardarla
+            clave = Fernet.generate_key()
+            with open(clave_path, "wb") as file:
+                file.write(clave)
+        return clave
+
+    def encriptar_datos(self, clave, datos):
+        cipher_suite = Fernet(clave)
+        texto_encriptado = cipher_suite.encrypt(str(datos).encode())
+        return texto_encriptado
+
+        
+        datos_desencriptados = self.desencriptar_datos(clave, datos_encriptados)
+
+        # Crear otro archivo CSV con la información desencriptada
+        csv_file_path_decrypted = "pizza_builder/CSV/pizzas_decrypted.csv"
+        with open(csv_file_path_decrypted, mode="w", newline="", encoding="utf-8") as file_decrypted:
+            writer_decrypted = csv.writer(file_decrypted)
+
+            # Si el archivo está vacío, escribir la cabecera
+            if file_decrypted.tell() == 0:
+                writer_decrypted.writerow(["Cliente", "Tipo de masa", "Tipo de salsa", "Ingredientes"])
+
+            # Escribir los datos desencriptados al archivo
+            writer_decrypted.writerow(datos_desencriptados)
+
+    def desencriptar_datos(self, clave, datos_encriptados):
+        cipher_suite = Fernet(clave)
+        texto_desencriptado = cipher_suite.decrypt(datos_encriptados).decode()
+        datos_desencriptados = texto_desencriptado.split(", ")
+        return datos_desencriptados
+
+
